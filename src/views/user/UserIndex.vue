@@ -41,41 +41,7 @@
           <el-button
                   size="mini"
                   @click="handleEdit(scope.$index, scope.row)">Edit</el-button>
-          <el-dialog center :visible.sync="dialogFormVisible" width="800px">
-            <div slot="title">
-              <h4>{{title}}</h4>
-            </div>
-            <el-form :model="adminForm">
-              <el-form-item label="用户名" label-width="120px">
-                <el-input v-model="adminForm.username" autocomplete="off"></el-input>
-              </el-form-item>
-              <el-form-item label="密码" label-width="120px">
-                <el-input v-model="adminForm.password" type="password" autocomplete="off"></el-input>
-              </el-form-item>
-              <el-form-item label="年龄" label-width="120px">
-                <el-input v-model="adminForm.adminAge" autocomplete="off"></el-input>
-              </el-form-item>
-              <el-form-item label="真实姓名" label-width="120px">
-                <el-input v-model="adminForm.realname" autocomplete="off"></el-input>
-              </el-form-item>
-              <el-form-item label="性别" label-width="120px">
-                <el-select v-model="adminForm.adminSex" placeholder="请选择性别">
-                  <el-option label="男" :value="0"></el-option>
-                  <el-option label="女" :value="1"></el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item label="电话" label-width="120px">
-                <el-input v-model="adminForm.phone" autocomplete="off"></el-input>
-              </el-form-item>
-              <el-form-item label="家庭住址" label-width="120px">
-                <el-input v-model="adminForm.homeAddr" autocomplete="off"></el-input>
-              </el-form-item>
-            </el-form>
-            <div slot="footer" class="dialog-footer">
-              <el-button @click="cancelForm()">取 消</el-button>
-              <el-button type="primary" @click="submitForm()">确 定</el-button>
-            </div>
-          </el-dialog>
+
           <el-button
                   size="mini"
                   type="danger"
@@ -83,6 +49,45 @@
         </template>
       </el-table-column>
     </el-table>
+
+    <el-dialog center :visible.sync="dialogFormVisible" width="800px">
+      <div slot="title">
+        <h4>{{title}}</h4>
+      </div>
+      <el-form :model="adminForm" :rules="dataRule" ref="adminForm">
+        <el-form-item label="用户名" label-width="120px" prop="username">
+          <el-input v-model="adminForm.username" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="密码" label-width="120px" prop="password">
+          <el-input v-model="adminForm.password" type="password" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="年龄" label-width="120px" prop="adminAge">
+          <el-input v-model="adminForm.adminAge" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="真实姓名" label-width="120px">
+          <el-input v-model="adminForm.realname" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="性别" label-width="120px">
+          <el-select v-model="adminForm.adminSex" placeholder="请选择性别">
+            <el-option label="男" :value="0"></el-option>
+            <el-option label="女" :value="1"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="电话" label-width="120px">
+          <el-input v-model="adminForm.phone" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="家庭住址" label-width="120px">
+          <el-input v-model="adminForm.homeAddr" autocomplete="off"></el-input>
+        </el-form-item>
+
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="cancelForm()">取 消</el-button>
+        <el-button type="primary" @click="submitForm()">确 定</el-button>
+      </div>
+
+
+    </el-dialog>
   </div>
 </template>
 
@@ -107,7 +112,15 @@
                     headPortrait:null,
                     createtime:null,
                     updatetime:null,
-                }
+                },
+                dataRule: {
+                    username: [
+                        { required: true, message: '用户名不能为空', trigger: 'blur' },
+                    ],
+                    password: [
+                        { required: true, message: '密码不能为空', trigger: 'blur' }
+                    ],
+                },
             }
         },
         components: {
@@ -125,32 +138,40 @@
                 this.clearForm()
             },
             submitForm(){
-                console.log("提交的表单",this.adminForm);
-                this.$http.post(
-                    {
-                      url:"cqcvc_dorm/admin/saveOrUpdate",
-                        data:this.adminForm
-                    }
-                ).then(({data})=>{
-                    //重新给后端发送请求
-                    this.getAdminList();
-                    this.dialogFormVisible=false
-                    //拍段是否操作成功
-                    if(data.code===0){
-                        this.$message({
-                            type:"success",
-                            message:"操作成功"
-                        })
-                    }else{
-                        if(data.code===0){
-                            this.$message({
-                                type:"error",
-                                message:"操作失败"
-                            })
-                        }
-                    }
+                this.$refs['adminForm'].validate((valid) => {
+                    console.log(valid);
+                    if (valid) {
+                        this.$http.post(
+                            {
+                                url:"cqcvc_dorm/admin/saveOrUpdate",
+                                data:this.adminForm
+                            }
+                        ).then(({data})=>{
+                            //重新给后端发送请求
+                            this.getAdminList();
+                            this.dialogFormVisible=false
+                            //拍段是否操作成功
+                            if(data.code===0){
+                                this.$message({
+                                    type:"success",
+                                    message:"操作成功"
+                                })
+                            }else{
+                                if(data.code===0){
+                                    this.$message({
+                                        type:"error",
+                                        message:"操作失败"
+                                    })
+                                }
+                            }
 
-                })
+                        })
+                    } else {
+
+                        return false;
+                    }
+                });
+
             },
             clearForm(){
                 this.adminForm.adminId=null

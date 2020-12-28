@@ -48,11 +48,11 @@
             <h4>{{title}}</h4>
           </div>
 
-          <el-form :model="Dorm" label-position="left">
-            <el-form-item label="门牌号" label-width="120px">
+          <el-form :model="Dorm" label-position="left" :rules="dormRule" ref="Dorm">
+            <el-form-item label="门牌号" label-width="120px" prop="houNum">
               <el-input v-model="Dorm.houNum" autocomplete="off"></el-input>
             </el-form-item>
-            <el-form-item label="楼层" >
+            <el-form-item label="楼层" prop="floor">
               <el-select v-model="Dorm.floor" placeholder="请选择楼层" label-width="120px">
                 <el-option
                         v-for="item in floorList"
@@ -62,17 +62,17 @@
                 </el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="床位数量" label-width="120px">
+            <el-form-item label="床位数量" label-width="120px" prop="bedCount">
               <el-input v-model="Dorm.bedCount" autocomplete="off"></el-input>
             </el-form-item>
-            <el-form-item label="是否居住" label-width="120px">
+            <el-form-item label="是否居住" label-width="120px" prop="isReside">
               <el-switch
                       v-model="Dorm.isReside"
                       active-color="#13ce66"
                       inactive-color="#ff4949">
               </el-switch>
             </el-form-item>
-            <el-form-item label="描述" label-width="120px">
+            <el-form-item label="描述" label-width="120px" prop="dormDescribe">
               <el-input
                       type="textarea"
                       placeholder="请输入描述内容"
@@ -85,7 +85,7 @@
 
           </el-form>
           <div slot="footer" class="dialog-footer">
-            <el-button @click="cancelForm()">取 消</el-button>
+            <el-button @click="dialogFormVisible=falsef">取 消</el-button>
             <el-button type="primary" @click="submitForm()">确 定</el-button>
           </div>
         </el-dialog>
@@ -204,23 +204,23 @@
         </el-drawer>
 
         <el-dialog :title="stuTitle" :visible.sync="stuDialog">
-          <el-form :model="stuForm">
-            <el-form-item label="学号" label-width="120px">
+          <el-form :model="stuForm" :rules="stuRule" ref="stuForm">
+            <el-form-item label="学号" label-width="120px" prop="stuNum">
               <el-input v-model="stuForm.stuNum" autocomplete="off"></el-input>
             </el-form-item>
-            <el-form-item label="名字" label-width="120px">
+            <el-form-item label="名字" label-width="120px" prop="stuName">
               <el-input v-model="stuForm.stuName" autocomplete="off"></el-input>
             </el-form-item>
-            <el-form-item label="电话" label-width="120px">
+            <el-form-item label="电话" label-width="120px" prop="phone">
               <el-input v-model="stuForm.phone" autocomplete="off"></el-input>
             </el-form-item>
-            <el-form-item label="系部" label-width="120px">
+            <el-form-item label="系部" label-width="120px" prop="department">
               <el-input v-model="stuForm.department" autocomplete="off"></el-input>
             </el-form-item>
-            <el-form-item label="年级" label-width="120px">
+            <el-form-item label="年级" label-width="120px" prop="grade">
               <el-input v-model="stuForm.grade" autocomplete="off"></el-input>
             </el-form-item>
-            <el-form-item label="班级" label-width="120px">
+            <el-form-item label="班级" label-width="120px" prop="stuClass">
               <el-input v-model="stuForm.stuClass" autocomplete="off"></el-input>
             </el-form-item>
 
@@ -279,7 +279,46 @@
                 floorList:[],
                 tableData:[],
                 dialogFormVisible:false,
-                title:""
+                title:"",
+                dormRule: {
+                    houNum: [
+                        { required: true, message: '房间号不能为空', trigger: 'blur' },
+                    ],
+                    floor: [
+                        { required: true, message: '楼层不能为空', trigger: 'blur' }
+                    ],
+                    isReside: [
+                        { required: true, message: '是否居住不能为空', trigger: 'blur' }
+                    ],
+                    bedCount: [
+                        { required: true, message: '床位数量不能为空', trigger: 'blur' }
+                    ],
+                    dormDescribe: [
+                        { required: true, message: '描述不能为空', trigger: 'blur' }
+                    ],
+                },
+
+                stuRule: {
+                    stuNum: [
+                        { required: true, message: '学号不能为空', trigger: 'blur' },
+                    ],
+                    stuName: [
+                        { required: true, message: '姓名不能为空', trigger: 'blur' }
+                    ],
+                    phone: [
+                        { required: true, message: '电话不能为空', trigger: 'blur' }
+                    ],
+                    grade: [
+                        { required: true, message: '所在年级不能为空', trigger: 'blur' }
+                    ],
+                    department: [
+                        { required: true, message: '院系不能为空', trigger: 'blur' }
+                    ],
+                    stuClass: [
+                        { required: true, message: '班级不能为空', trigger: 'blur' }
+                    ],
+
+                },
 
             }
         },
@@ -321,35 +360,41 @@
                     this.stuForm.stuClass=null
             },
             subStuForm(){
+                this.$refs['stuForm'].validate((valid) => {
+                    if (valid) {
+                        this.$http.post(
+                            {
+                                url:"cqcvc_dorm/stu/saveOrUpdate",
+                                data:this.stuForm
+                            }
+                        ).then(({data})=>{
+                            //重新给后端发送请求
+                            this.sendStuReq()
+                            this.stuDialog=false
+                            //判断是否操作成功
+                            if(data.code===0){
+                                this.$message({
+                                    type:"success",
+                                    message:"操作成功"
+                                })
+                            }else{
+                                if(data.code===0){
+                                    this.$message({
+                                        type:"error",
+                                        message:"操作失败"
+                                    })
+                                }
+                            }
 
-                this.$http.post(
-                    {
-                        url:"cqcvc_dorm/stu/saveOrUpdate",
-                        data:this.stuForm
-                    }
-                ).then(({data})=>{
-                    //重新给后端发送请求
-                    this.sendStuReq()
-                    this.stuDialog=false
-                    //判断是否操作成功
-                    if(data.code===0){
-                        this.$message({
-                            type:"success",
-                            message:"操作成功"
+
+
+
                         })
-                    }else{
-                        if(data.code===0){
-                            this.$message({
-                                type:"error",
-                                message:"操作失败"
-                            })
-                        }
+                    } else {
+                        return false
                     }
+                });
 
-
-
-
-                })
             },
             stuAdd(){
                 console.log(this.Dorm);
@@ -482,33 +527,41 @@
                 console.log(index, row);
             },
             submitForm(){
-                this.Dorm.isReside=this.Dorm.isReside?0:1
-                this.$http.post(
-                    {
-                        url:"cqcvc_dorm/dorm/saveOrUpdate",
-                        data:this.Dorm
-                    }
-                ).then(({data})=>{
-                    //重新给后端发送请求
-                    this.getDormByDbId();
-                    this.dialogFormVisible=false
-                    //拍段是否操作成功
-                    if(data.code===0){
-                        this.$message({
-                            type:"success",
-                            message:"操作成功"
-                        })
-                    }else{
-                        if(data.code===0){
-                            this.$message({
-                                type:"error",
-                                message:"操作失败"
-                            })
-                        }
-                    }
-                    //还原表单
+                this.$refs['Dorm'].validate((valid) => {
+                    if (valid) {
+                        this.Dorm.isReside=this.Dorm.isReside?0:1
+                        this.$http.post(
+                            {
+                                url:"cqcvc_dorm/dorm/saveOrUpdate",
+                                data:this.Dorm
+                            }
+                        ).then(({data})=>{
+                            //重新给后端发送请求
+                            this.getDormByDbId();
+                            this.dialogFormVisible=false
+                            //拍段是否操作成功
+                            if(data.code===0){
+                                this.$message({
+                                    type:"success",
+                                    message:"操作成功"
+                                })
+                            }else{
+                                if(data.code===0){
+                                    this.$message({
+                                        type:"error",
+                                        message:"操作失败"
+                                    })
+                                }
+                            }
+                            //还原表单
 
-                })
+                        })
+                    } else {
+
+                        return false;
+                    }
+                });
+
             },
 
             clearForm(){

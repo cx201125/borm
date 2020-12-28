@@ -38,14 +38,14 @@
             <div slot="title">
               <h4>{{title}}</h4>
             </div>
-            <el-form :model="dbForm">
-              <el-form-item label="宿舍楼名称" label-width="120px">
+            <el-form :model="dbForm" :rules="dbRule" ref="dbForm">
+              <el-form-item label="宿舍楼名称" label-width="120px" prop="dbName">
                 <el-input v-model="dbForm.dbName" autocomplete="off"></el-input>
               </el-form-item>
-              <el-form-item label="宿舍楼描述" label-width="120px">
+              <el-form-item label="宿舍楼描述" label-width="120px" prop="dbDescribe">
                 <el-input v-model="dbForm.dbDescribe" autocomplete="off"></el-input>
               </el-form-item>
-              <el-form-item label="楼层" label-width="120px">
+              <el-form-item label="楼层" label-width="120px" prop="dbCount">
                 <el-input v-model="dbForm.dbCount" autocomplete="off"></el-input>
               </el-form-item>
             </el-form>
@@ -79,8 +79,20 @@
                     dbName:null,
                     dbDescribe:null,
                     dbCount:null,
+                },
+                dbRule: {
+                    dbName: [
+                        { required: true, message: '宿舍楼名称不能为空', trigger: 'blur' },
+                    ],
+                    dbDescribe: [
+                        { required: true, message: '宿舍楼描述不能为空', trigger: 'blur' }
+                    ],
+                    dbCount: [
+                        { required: true, message: '楼层不能为空', trigger: 'blur' }
+                    ],
 
-                }
+
+                },
             }
         },
         components: {
@@ -98,33 +110,41 @@
                 this.dialogFormVisible=false
             },
             submitForm(){
-                this.$http.post(
-                    {
-                      url:"cqcvc_dorm/dormbuild/saveOrUpdate",
-                        data:this.dbForm
-                    }
-                ).then(({data})=>{
-                    //重新给后端发送请求(重新请求数据)
-                    this.getdromBuildList();
-                    this.dialogFormVisible=false
-                    //拍段是否操作成功
-                    if(data.code===0){
-                        this.$message({
-                            type:"success",
-                            message:"操作成功"
+                this.$refs["dbForm"].validate((valid) => {
+                    if (valid) {
+                        this.$http.post(
+                            {
+                                url:"cqcvc_dorm/dormbuild/saveOrUpdate",
+                                data:this.dbForm
+                            }
+                        ).then(({data})=>{
+                            //重新给后端发送请求(重新请求数据)
+                            this.getdromBuildList();
+                            this.dialogFormVisible=false
+                            //拍段是否操作成功
+                            if(data.code===0){
+                                this.$message({
+                                    type:"success",
+                                    message:"操作成功"
+                                })
+                            }else{
+                                if(data.code===0){
+                                    this.$message({
+                                        type:"error",
+                                        message:"操作失败"
+                                    })
+                                }
+                            }
+
+
+
                         })
-                    }else{
-                        if(data.code===0){
-                            this.$message({
-                                type:"error",
-                                message:"操作失败"
-                            })
-                        }
+                    } else {
+
+                        return false;
                     }
+                });
 
-
-
-                })
             },
             clearForm(){
                 this.dbForm.dbId=null
