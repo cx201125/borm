@@ -56,6 +56,18 @@ const routes = [
         component:() => import('@/views/statistics/Echarts.vue')
 
       },
+      {
+        name:'echartspie',
+        path:'statistics/echartspie',
+        component:() => import('@/views/statistics/Echarts_pie.vue')
+
+      },
+      {
+        name:'echartssca',
+        path:'statistics/echartssca',
+        component:() => import('@/views/statistics/Echarts_sca.vue')
+
+      },
 
 
     ]

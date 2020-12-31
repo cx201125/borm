@@ -62,22 +62,23 @@
           <el-input v-model="adminForm.password" type="password" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="年龄" label-width="120px" prop="adminAge">
-          <el-input v-model="adminForm.adminAge" autocomplete="off"></el-input>
+          <el-input type="age" v-model.number="adminForm.adminAge" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="真实姓名" label-width="120px">
+        <el-form-item label="真实姓名" label-width="120px" prop="realname">
           <el-input v-model="adminForm.realname" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="性别" label-width="120px">
-          <el-select v-model="adminForm.adminSex" placeholder="请选择性别">
+        <el-form-item label="性别" label-width="120px" prop="adminSex">
+          <el-select v-model="adminForm.adminSex" placeholder="请选择性别" >
             <el-option label="男" :value="0"></el-option>
             <el-option label="女" :value="1"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="电话" label-width="120px">
+        <el-form-item label="电话" label-width="120px" prop="phone">
           <el-input v-model="adminForm.phone" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="家庭住址" label-width="120px">
-          <el-input v-model="adminForm.homeAddr" autocomplete="off"></el-input>
+        <el-form-item label="家庭住址" label-width="120px" prop="homeAddr">
+          <el-input type="textarea" v-model="adminForm.homeAddr"  maxlength="30"
+                    show-word-limit autocomplete="off"></el-input>
         </el-form-item>
 
       </el-form>
@@ -115,11 +116,21 @@
                 },
                 dataRule: {
                     username: [
-                        { required: true, message: '用户名不能为空', trigger: 'blur' },
+                        { required: true, message: '用户名不能为空', trigger: 'blur' ,trigger: 'blur' },
+                        { min: 6, max: 14,message: '长度在 6 到 14 个字符', trigger: 'blur' },
                     ],
                     password: [
-                        { required: true, message: '密码不能为空', trigger: 'blur' }
+                        { required: true, message: '密码不能为空', trigger: 'blur' },
+                        {pattern: /^(\w){6,20}$/, message: '只能输入6-20个字母、数字、下划线' ,trigger: 'blur'}
                     ],
+                    adminAge:[
+                        { type: 'number', message: '年龄必须为数字值', trigger: 'blur' }
+                    ],
+                    phone:[
+                        { pattern:/^1[12345789]\d{9}$/, message: '请输入正确的手机号码',trigger: 'blur'},
+                    ]
+
+
                 },
             }
         },
@@ -174,17 +185,20 @@
 
             },
             clearForm(){
-                this.adminForm.adminId=null
-                this.adminForm.adminAge=null
-                this.adminForm.adminSex=null
-                this.adminForm.username=null
-                this.adminForm.password=null
-                this.adminForm.realname=null
-                this.adminForm.headPortrait=null
-                this.adminForm.homeAddr=null
-                this.adminForm.phone=null
-                this.adminForm.updatetime=null
-                this.adminForm.createtime=null
+                // this.adminForm.adminId=null
+                // this.adminForm.adminAge=null
+                // this.adminForm.adminSex=null
+                // this.adminForm.username=null
+                // this.adminForm.password=null
+                // this.adminForm.realname=null
+                // this.adminForm.headPortrait=null
+                // this.adminForm.homeAddr=null
+                // this.adminForm.phone=null
+                // this.adminForm.updatetime=null
+                // this.adminForm.createtime=null
+                if (this.$refs['adminForm'] !== undefined) {
+                    this.$refs['adminForm'].resetFields();
+                }
             },
 
             handleEdit(index, row) {

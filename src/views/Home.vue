@@ -22,7 +22,7 @@
           <span slot="title" >首页</span>
         </el-menu-item>
 
-        <el-menu-item index="2"  :disabled="user!==null?user.disabled===1:false" @click="toAdmin">
+        <el-menu-item index="2"  :disabled="user!==null?user.disable===0:false" @click="toAdmin">
           <i class="el-icon-user-solid"></i>
           <span slot="title" >管理员管理</span>
         </el-menu-item>
@@ -43,11 +43,28 @@
           </el-menu-item-group>
 
         </el-submenu>
+        <el-submenu index="5">
+          <template slot="title">
+            <i class="el-icon-date"></i>
+            <span>图表统计</span>
+          </template>
+          <el-menu-item-group>
+            <el-menu-item index="5-1" @click="toEcharts">
+              <i class="el-icon-s-data"></i>
+              <span slot="title" >条形图</span>
+            </el-menu-item>
+            <el-menu-item index="5-2" @click="toEchartspie">
+              <i class="el-icon-football"></i>
+              <span slot="title" >饼图</span>
+            </el-menu-item>
+            <el-menu-item index="5-3" @click="toEchartssca">
+              <i class="el-icon-cpu"></i>
+              <span slot="title" >散点图</span>
+            </el-menu-item>
+          </el-menu-item-group>
 
-        <el-menu-item index="5" @click="toEcharts">
-          <i class="el-icon-menu"></i>
-          <span slot="title" >统计</span>
-        </el-menu-item>
+        </el-submenu>
+
 
       </el-menu>
     </el-aside>
@@ -56,11 +73,11 @@
       <el-header style="text-align: right;">
 
         <el-row :gutter="20" >
-          <el-col :span="16">
-          <span style="font-size: 20px;"><em><b>重庆城市职业学院宿舍管理系统</b></em></span>
+          <el-col :span="14">
+          <span style="font-size: 20px;"><b>重庆城市职业学院宿舍管理系统</b></span>
 
           </el-col>
-          <el-col :span="6" :offset="2"><div class="grid-content bg-purple">
+          <el-col :span="6" :offset="4"><div class="grid-content bg-purple">
             <el-dropdown :show-timeout="0" placement="bottom">
             <span class="el-dropdown-link">
                           <el-avatar :size="50" :src="user!==null?user.headPortrait:''">
@@ -282,6 +299,20 @@
 
                             if(this.$route.path!=="/home/statistics/echarts"){
                                 this.$router.push("/home/statistics/echarts")
+                            }
+
+                        },
+                        toEchartspie(){
+
+                            if(this.$route.path!=="/home/statistics/echartspie"){
+                                this.$router.push("/home/statistics/echartspie")
+                            }
+
+                        },
+                        toEchartssca(){
+
+                            if(this.$route.path!=="/home/statistics/echartssca"){
+                                this.$router.push("/home/statistics/echartssca")
                             }
 
                         },

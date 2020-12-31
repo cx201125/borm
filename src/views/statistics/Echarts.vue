@@ -1,7 +1,7 @@
 <template>
   <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
   <div>
-    <div style="width:1300px;height:600px" ref="chart"></div>
+    <div style="width:1200px;height:560px" ref="chart"></div>
   </div>
 </template>
 

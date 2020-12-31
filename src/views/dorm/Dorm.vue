@@ -50,7 +50,7 @@
 
           <el-form :model="Dorm" label-position="left" :rules="dormRule" ref="Dorm">
             <el-form-item label="门牌号" label-width="120px" prop="houNum">
-              <el-input v-model="Dorm.houNum" autocomplete="off"></el-input>
+              <el-input v-model.number="Dorm.houNum" autocomplete="off"></el-input>
             </el-form-item>
             <el-form-item label="楼层" prop="floor">
               <el-select v-model="Dorm.floor" placeholder="请选择楼层" label-width="120px">
@@ -63,7 +63,7 @@
               </el-select>
             </el-form-item>
             <el-form-item label="床位数量" label-width="120px" prop="bedCount">
-              <el-input v-model="Dorm.bedCount" autocomplete="off"></el-input>
+              <el-input v-model.number="Dorm.bedCount" autocomplete="off"></el-input>
             </el-form-item>
             <el-form-item label="是否居住" label-width="120px" prop="isReside">
               <el-switch
@@ -85,7 +85,7 @@
 
           </el-form>
           <div slot="footer" class="dialog-footer">
-            <el-button @click="dialogFormVisible=falsef">取 消</el-button>
+            <el-button @click="dialogFormVisible=false">取 消</el-button>
             <el-button type="primary" @click="submitForm()">确 定</el-button>
           </div>
         </el-dialog>
@@ -114,9 +114,7 @@
         <el-table-column  label="是否显示学生" >
 
           <template slot-scope="scope">
-
-                <el-button type="primary" plain @click="showStu(scope.row.dormId)">显示</el-button>
-
+              <el-button type="primary" plain @click="showStu(scope.row.dormId)">显示</el-button>
           </template>
         </el-table-column>
 
@@ -283,6 +281,7 @@
                 dormRule: {
                     houNum: [
                         { required: true, message: '房间号不能为空', trigger: 'blur' },
+                        { type: 'number', message: '房间号只能是数字', trigger: 'blur' },
                     ],
                     floor: [
                         { required: true, message: '楼层不能为空', trigger: 'blur' }
@@ -291,7 +290,8 @@
                         { required: true, message: '是否居住不能为空', trigger: 'blur' }
                     ],
                     bedCount: [
-                        { required: true, message: '床位数量不能为空', trigger: 'blur' }
+                        { required: true, message: '床位数量不能为空', trigger: 'blur' },
+                        { type: 'number', message: '床位数量只能是数字', trigger: 'blur' },
                     ],
                     dormDescribe: [
                         { required: true, message: '描述不能为空', trigger: 'blur' }
@@ -306,7 +306,8 @@
                         { required: true, message: '姓名不能为空', trigger: 'blur' }
                     ],
                     phone: [
-                        { required: true, message: '电话不能为空', trigger: 'blur' }
+                        { required: true, message: '电话不能为空', trigger: 'blur' },
+                        { pattern:/^1[12345789]\d{9}$/, message: '请输入正确的手机号码',trigger: 'blur'},
                     ],
                     grade: [
                         { required: true, message: '所在年级不能为空', trigger: 'blur' }
@@ -351,13 +352,16 @@
                 this.cleanStuFrom()
             },
             cleanStuFrom(){
-                    this.stuForm.stuId=null
-                    this.stuForm.stuNum=null
-                    this.stuForm.stuName=null
-                    this.stuForm.phone=null
-                    this.stuForm.department=null
-                    this.stuForm.grade=null
-                    this.stuForm.stuClass=null
+                    // this.stuForm.stuId=null
+                    // this.stuForm.stuNum=null
+                    // this.stuForm.stuName=null
+                    // this.stuForm.phone=null
+                    // this.stuForm.department=null
+                    // this.stuForm.grade=null
+                    // this.stuForm.stuClass=null
+                if(this.$refs['stuForm'] !== undefined){
+                    this.$refs['stuForm'].resetFields();
+                }
             },
             subStuForm(){
                 this.$refs['stuForm'].validate((valid) => {
@@ -404,6 +408,8 @@
                 this.stuTitle="添加学生信息";
             },
             stuEdit(index,row){
+                //清除表单
+                this.cleanStuFrom()
               this.stuDialog=true
                 this.stuForm.stuId=row.stuId
                 this.stuForm.stuNum=row.stuNum
@@ -470,7 +476,7 @@
                 this.dialogFormVisible=true;
                 this.Dorm.dormBuildId=this.DormBuild.dbId
                 this.dialogtype="add";
-                this.title="添加宿舍楼信息";
+                this.title="添加宿舍信息";
             },
             handleDelete(index, row) {
                 this.$confirm('此操作将永久删除该宿舍, 是否继续?', '提示', {
@@ -509,11 +515,12 @@
 
             },
             handleEdit(index, row) {
-
+                //清空表单
+                this.clearForm()
                 //为表单赋值
                 this.dialogFormVisible=true;
                 this.dialogtype="edit";
-                this.title="修改用户信息"
+                this.title="修改宿舍信息"
                 this.Dorm.dormId=row.dormId
                 this.Dorm.floor=row.floor
                 this.Dorm.houNum=row.houNum
@@ -563,15 +570,17 @@
                 });
 
             },
-
             clearForm(){
-                this.Dorm.dormId=null
-                this.Dorm.floor=null
-                this.Dorm.houNum=null
-                this.Dorm.isReside=true
-                this.Dorm.bedCount=null
-                this.Dorm.dormDescribe=null
-                this.Dorm.dormBuildId=null
+                // this.Dorm.dormId=null
+                // this.Dorm.floor=null
+                // this.Dorm.houNum=null
+                // this.Dorm.isReside=true
+                // this.Dorm.bedCount=null
+                // this.Dorm.dormDescribe=null
+                // this.Dorm.dormBuildId=null
+                if(this.$refs['Dorm'] !== undefined){
+                    this.$refs['Dorm'].resetFields()
+                }
             },
             subhouNum(){
 

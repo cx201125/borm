@@ -43,10 +43,11 @@
                 <el-input v-model="dbForm.dbName" autocomplete="off"></el-input>
               </el-form-item>
               <el-form-item label="宿舍楼描述" label-width="120px" prop="dbDescribe">
-                <el-input v-model="dbForm.dbDescribe" autocomplete="off"></el-input>
+                <el-input type="textarea" v-model="dbForm.dbDescribe" maxlength="30"
+                          show-word-limit autocomplete="off"></el-input>
               </el-form-item>
               <el-form-item label="楼层" label-width="120px" prop="dbCount">
-                <el-input v-model="dbForm.dbCount" autocomplete="off"></el-input>
+                <el-input v-model.number="dbForm.dbCount" autocomplete="off"></el-input>
               </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -88,7 +89,8 @@
                         { required: true, message: '宿舍楼描述不能为空', trigger: 'blur' }
                     ],
                     dbCount: [
-                        { required: true, message: '楼层不能为空', trigger: 'blur' }
+                        { required: true, message: '楼层不能为空', trigger: 'blur' },
+                        { type: 'number', message: '楼层只能为数字类型', trigger: 'blur' }
                     ],
 
 
@@ -147,14 +149,18 @@
 
             },
             clearForm(){
-                this.dbForm.dbId=null
-                this.dbForm.dbName=null
-                this.dbForm.dbCount=null
-                this.dbForm.dbDescribe=null
+                // this.dbForm.dbId=null
+                // this.dbForm.dbName=null
+                // this.dbForm.dbCount=null
+                // this.dbForm.dbDescribe=null
+                if(this.$refs['dbForm'] !== undefined){
+                    this.$refs['dbForm'].resetFields()
+                }
+
             },
 
             handleEdit(index, row) {
-
+                this.clearForm()
                 //为表单赋值
                 this.dialogFormVisible=true;
                 this.dialogtype="edit";
